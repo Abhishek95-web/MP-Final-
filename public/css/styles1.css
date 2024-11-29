@@ -1,0 +1,50 @@
+/* styles1.css */
+
+/* General body styling */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('https://cdn.pixabay.com/photo/2015/11/12/10/24/explosion-1039943_1280.jpg'); /* Background image */
+    background-size: cover; /* Cover the entire viewport */
+    background-position: center; /* Center the image */
+    color: white; /* Text color for visibility */
+}
+
+/* Container for emergency options */
+.emergency-options-container {
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent black background for readability */
+    padding: 40px; /* Spacing around the content */
+    border-radius: 10px; /* Rounded corners */
+    max-width: 600px; /* Maximum width for the container */
+    margin: 100px auto; /* Center the container on the page */
+    text-align: center; /* Center text */
+}
+
+/* Button styles */
+.emergency-options {
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 15px; /* Space between buttons */
+}
+
+.emergency-option {
+    padding: 15px; /* Padding for buttons */
+    background-color: #ff4c4c; /* Button background color */
+    border: none; /* No border */
+    border-radius: 8px; /* Rounded corners */
+    color: white; /* Text color */
+    font-size: 16px; /* Font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Transition for background color */
+}
+
+.emergency-option:hover {
+    background-color: #d43636; /* Darker red on hover */
+}
+
+/* Selected emergency message styling */
+.selected-emergency {
+    margin-top: 20px; /* Space above the selected message */
+    font-size: 18px; /* Font size */
+}

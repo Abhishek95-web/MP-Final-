@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Disaster Management Map</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+      }
+
+      #form-container {
+        width: 20%;
+        background-color: #f4f4f4;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+      }
+
+      #form-container h2 {
+        margin-top: 0;
+      }
+
+      #form-container form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #form-container input[type="text"],
+      #form-container input[type="number"] {
+        margin-bottom: 10px;
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      #form-container button {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      #form-container button:hover {
+        background-color: #0056b3;
+      }
+
+      #locations-list {
+        margin-top: 20px;
+        font-size: 14px;
+      }
+
+      #locations-list h3 {
+        margin: 10px 0;
+      }
+
+      #map-container {
+        width: 80%;
+      }
+
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Form container -->
+    <div id="form-container">
+      <h2>Disaster Management</h2>
+      <form id="location-form">
+        <input
+          type="text"
+          id="city-input"
+          placeholder="Enter city name"
+          required
+        />
+        <input
+          type="number"
+          id="radius-input"
+          placeholder="Enter radius in meters"
+          required
+          min="100"
+        />
+        <button type="submit">Locate & Mark Area</button>
+      </form>
+
+      <div id="locations-list">
+        <h3>Nearby Locations:</h3>
+        <ul id="location-items">
+          <!-- Dynamic list items will be added here -->
+        </ul>
+      </div>
+    </div>
+
+    <!-- Map container -->
+    <div id="map-container">
+      <div id="map"></div>
+    </div>
+
+    <script>
+      // Define a custom icon for the main marker
+      const mainMarkerIcon = L.icon({
+        iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSB8M6olUsebiGnWjogGPyj97_eAfHZsTHB9g&s", // Use a custom icon URL
+        iconSize: [40, 40], // Set the size of the main marker
+        iconAnchor: [20, 40], // Adjust the anchor point
+        popupAnchor: [0, -40], // Adjust popup position
+      });
+    
+      // Initialize the map
+      var map = L.map("map", {
+        center: [28.7041, 77.1025], // Default center: Delhi
+        zoom: 13,
+      });
+    
+      // Add tile layer
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(map);
+    
+      let currentCircle = null; // Keep track of the current circle
+      let mainMarker = null; // Store the main marker
+    
+      // Form submission handler
+      document.getElementById("location-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+    
+        // Clear previous locations
+        document.getElementById("location-items").innerHTML = "";
+    
+        // Get city input and radius
+        const city = document.getElementById("city-input").value;
+        const radius = document.getElementById("radius-input").value;
+    
+        try {
+          // Fetch geocoding data for the city
+          const geoResponse = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${city}&format=json`
+          );
+          const geoData = await geoResponse.json();
+    
+          if (geoData.length === 0) {
+            alert("City not found. Please try another city.");
+            return;
+          }
+    
+          const { lat, lon } = geoData[0];
+    
+          // Center map on the new location
+          map.setView([lat, lon], 12);
+    
+          // Remove the previous circle and main marker, if any
+          if (currentCircle) {
+            map.removeLayer(currentCircle);
+          }
+          if (mainMarker) {
+            map.removeLayer(mainMarker);
+          }
+    
+          // Draw a circle around the city
+          currentCircle = L.circle([lat, lon], {
+            color: "red",
+            fillColor: "#f03",
+            fillOpacity: 0.5,
+            radius: radius,
+          }).addTo(map);
+    
+          // Add the main marker
+          mainMarker = L.marker([lat, lon], { icon: mainMarkerIcon })
+            .addTo(map)
+            .bindPopup(`<b>Main Location</b><br>City: ${city}<br>Radius: ${radius} meters`)
+            .openPopup();
+    
+          // Fetch nearby locations using Overpass API
+          const query = `
+            [out:json][timeout:25];
+            (
+              node["amenity"="hospital"](around:${radius},${lat},${lon});
+              node["amenity"="police"](around:${radius},${lat},${lon});
+              node["emergency"="fire_station"](around:${radius},${lat},${lon});
+            );
+            out body;
+          `;
+    
+          const overpassResponse = await fetch("https://overpass-api.de/api/interpreter", {
+            method: "POST",
+            body: query,
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          });
+    
+          const overpassData = await overpassResponse.json();
+    
+          if (overpassData.elements.length === 0) {
+            alert("No hospitals, police stations, or fire stations found in the area.");
+            return;
+          }
+    
+          // Display locations and add them to the list
+          overpassData.elements.forEach((place) => {
+            const { lat, lon, tags } = place;
+            const name = tags.name || "Unnamed";
+            const type = tags.amenity || tags.emergency || "Unknown";
+            const contact = tags.phone || "No contact available";
+    
+            // Add marker to map
+            L.marker([lat, lon])
+              .addTo(map)
+              .bindPopup(`<b>${name}</b><br>Type: ${type}<br>Contact: ${contact}`);
+    
+            // Add location to the list
+            const listItem = document.createElement("li");
+            listItem.innerHTML = `<b>${name}</b> - ${type}<br>Contact: ${contact}`;
+            document.getElementById("location-items").appendChild(listItem);
+          });
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Something went wrong. Please try again.");
+        }
+      });
+    </script>
+    
+  </body>
+</html>

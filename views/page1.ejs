@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Emergency Type</title>
+    <link rel="stylesheet" href="css/styles1.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <div class="emergency-options-container">
+        <h1>Select the Type of Emergency</h1>
+        <p>Please select the type of emergency to proceed with the appropriate response:</p>
+        
+        <!-- Emergency Options -->
+        <div class="emergency-options">
+            <button class="emergency-option" onclick="selectEmergency('Short Circuit')">Short Circuit</button>
+            <button class="emergency-option" onclick="selectEmergency('Fire Incident')">Fire Incident</button>
+            <button class="emergency-option" onclick="selectEmergency('Landslide')">Landslide</button>
+            <button class="emergency-option" onclick="selectEmergency('Flood')">Flood</button>
+            <button class="emergency-option" onclick="selectEmergency('Medical Emergency')">Medical Emergency</button>
+        </div>
+        
+        <div id="selected-emergency" class="selected-emergency"></div>
+    </div>
+
+    <script>
+        function selectEmergency(type) {
+            document.getElementById('selected-emergency').innerText = `You selected: ${type}. Help is on the way.`;
+            // Further processing or redirection can be added here.
+        }
+    </script>
+</body>
+</html>

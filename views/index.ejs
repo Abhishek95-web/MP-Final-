@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Disaster Management Portal - Login</title>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Welcome to the Disaster Management Portal</h1>
+            <p>Your trusted partner in disaster preparedness and response. Stay informed, stay safe.</p>
+            <p>Join us in creating a resilient community by taking proactive steps to protect yourself and your loved ones.</p>
+        </div>
+    </div>
+
+
+    <!-- SOS Button section above login forms -->
+    <div class="sos-section">
+      <a href="/sos" ><button id="sos-button">SOS Call</button></a>
+        
+        <p id="location-info"></p> <!-- Display location info here -->
+    </div>
+
+    <!-- Emergency selection section (hidden initially) -->
+    <div class="emergency-options" id="emergency-options" style="display: none;">
+        <h2>Select the Type of Emergency</h2>
+        <form id="emergency-form">
+            <label>
+                <input type="radio" name="emergency" value="short-circuit"> Short Circuit
+            </label><br>
+            <label>
+                <input type="radio" name="emergency" value="fire-incident"> Fire Incident
+            </label><br>
+            <label>
+                <input type="radio" name="emergency" value="landslide"> Landslide
+            </label><br>
+            <label>
+                <input type="radio" name="emergency" value="flood"> Flood
+            </label><br>
+            <label>
+                <input type="radio" name="emergency" value="earthquake"> Earthquake
+            </label><br>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Flex container for side-by-side login boxes -->
+    <div class="login-container">
+        <div class="container" id="login">
+            <form class="login-form" action="/register" method="post">
+                <h1>Sign Up</h1>
+                <input type="text" placeholder="Username" required
+                name="username">
+                <input type="password" placeholder="Password" required name="password">
+                <button type="submit" id="submit">Login</button>
+            </form>
+        </div>
+        <div class="container" id="login">
+            <form class="login-form" action="/login" method="post">
+                <h1>Login</h1>
+                <input type="text" placeholder="Username" required name="username">
+                <input type="password" placeholder="Password" required name="password">
+                <button type="submit" id="submit">Login</button>
+                <p>Don't have an account? <a href="#">Sign Up</a></p>
+            </form>
+        </div>
+    
+        <div class="container" id="agency-login">
+            <form class="login-form" action="/login" method="post">
+                <h1>Login as Agency</h1>
+                <input type="text" placeholder="Agency ID" required name="username">
+                <input type="password" placeholder="Password" required name="password">
+                <button type="submit">Login</button>
+                <p>Don't have an account? <a href="#">Sign Up as Agency</a></p>
+            </form>
+        </div>
+    </div>
+    
+
+    <div class="info">
+        <h2>Why Prepare?</h2>
+        <p>Disasters can strike at any time. Being prepared can save lives and reduce damage. Here are some tips:</p>
+        <ul>
+            <li>Create an emergency plan.</li>
+            <li>Have an emergency kit ready.</li>
+            <li>Stay informed about local risks.</li>
+            <li>Practice safety drills with your family.</li>
+        </ul>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
